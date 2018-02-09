@@ -156,8 +156,9 @@ COPY ipython_config.py $JUPYTER_CONFIG_DIR
 #COPY ipython_config.py $(ipython locate)/profile_default
 
 RUN conda install -y -c conda-forge ipyvolume pythreejs cookiecutter beakerx
-
-RUN jupyter labextension install beakerx-jupyterlab
+RUN conda install -y -c conda-forge tqdm seaborn cython
+# make the jupyterlab unresposible I may not use the beakerx labextension 2018-02-09
+# RUN jupyter labextension install beakerx-jupyterlab
 
 USER root
 
