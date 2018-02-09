@@ -156,12 +156,15 @@ COPY ipython_config.py $JUPYTER_CONFIG_DIR
 #COPY ipython_config.py $(ipython locate)/profile_default
 
 RUN conda install -y -c conda-forge ipyvolume pythreejs cookiecutter beakerx
+
+RUN jupyter labextension install beakerx-jupyterlab
+
 USER root
 
 EXPOSE 8889
 EXPOSE 8082
 ## Make sure that notebooks are in the current WORKDIR
-WORKDIR $HOME
+WORKDIR  $AQUABIOTA_GIT_DIR#  $HOME
 # Ensure workspace belongs to user
 # Ensure access to .local
 RUN mkdir -p $HOME/.local
