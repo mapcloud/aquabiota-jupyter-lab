@@ -161,8 +161,8 @@ RUN conda install -y -c conda-forge tqdm seaborn cython
 # RUN jupyter labextension install beakerx-jupyterlab
 
 USER root
-
-ADD fix-permissions /usr/local/bin/fix-permissions
+# https://github.com/jupyter/docker-stacks/blob/master/r-notebook/Dockerfile
+# ADD fix-permissions /usr/local/bin/fix-permissions
 
 # R pre-requisites
 RUN apt-get update && \
@@ -193,8 +193,7 @@ RUN conda install --quiet --yes \
     'r-crayon' \
     'r-randomforest' \
     'r-hexbin' && \
-    conda clean -tipsy && \
-    fix-permissions $CONDA_DIR
+    conda clean -tipsy # && / fix-permissions $CONDA_DIR
 
 USER root
 
