@@ -187,7 +187,7 @@ USER root
 EXPOSE 8888
 EXPOSE 8082
 ## Make sure that notebooks are in the current WORKDIR
-WORKDIR  $AQUABIOTA_GIT_DIR#  $HOME
+WORKDIR $HOME
 # Ensure workspace belongs to user
 # Ensure access to .local
 RUN mkdir -p $HOME/.local
