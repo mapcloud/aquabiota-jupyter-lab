@@ -71,7 +71,11 @@ RUN apt-get update --fix-missing && \
     texlive-xetex \
     vim \
     unzip \
-    p7zip-full
+    p7zip-full \
+    fonts-dejavu \
+    tzdata \
+    gfortran \
+    gcc
 
 # from https://github.com/ContinuumIO/docker-images/blob/master/anaconda3/Dockerfile
 RUN apt-get install -yq --no-install-recommends libglib2.0-0 libxext6 libsm6 libxrender1
@@ -146,36 +150,11 @@ RUN conda install -y gdal -c conda-forge
 # COPY pip-requirements.txt /tmp/
 RUN pip install s2sphere pyorient tinydb
 #
-RUN conda install -y -c conda-forge xmltodict
+RUN conda install -y -c conda-forge xmltodict ipyvolume pythreejs cookiecutter beakerx tqdm cython
 #--requirement /tmp/pip-requirements.txt
+RUN mkdir $HOME/R-site-library/
 
-RUN ipython profile create && echo $(ipython locate)
-# make sure ipython will know where to find the git packages.
-
-COPY ipython_config.py $JUPYTER_CONFIG_DIR
-#COPY ipython_config.py $(ipython locate)/profile_default
-
-RUN conda install -y -c conda-forge ipyvolume pythreejs cookiecutter beakerx
-RUN conda install -y -c conda-forge tqdm seaborn cython
-# make the jupyterlab unresposible I may not use the beakerx labextension 2018-02-09
-# RUN jupyter labextension install beakerx-jupyterlab
-
-USER root
-# https://github.com/jupyter/docker-stacks/blob/master/r-notebook/Dockerfile
-# ADD fix-permissions /usr/local/bin/fix-permissions
-
-# R pre-requisites
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    fonts-dejavu \
-    tzdata \
-    gfortran \
-    gcc && apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
-USER $NB_USER
-
-# R packages
+RUN conda config --add channels r
 RUN conda install --quiet --yes \
     'r-base' \
     'r-irkernel' \
@@ -192,12 +171,20 @@ RUN conda install --quiet --yes \
     'r-rcurl' \
     'r-crayon' \
     'r-randomforest' \
-    'r-hexbin' && \
-    conda clean -tipsy # && / fix-permissions $CONDA_DIR
+    'r-hexbin'
 
+RUN ipython profile create && echo $(ipython locate)
+# make sure ipython will know where to find the git packages.
+
+COPY ipython_config.py $JUPYTER_CONFIG_DIR
+#COPY ipython_config.py $(ipython locate)/profile_default
+
+
+# make the jupyterlab unresposible I may not use the beakerx labextension 2018-02-09
+# RUN jupyter labextension install beakerx-jupyterlab
 USER root
 
-EXPOSE 8889
+EXPOSE 8888
 EXPOSE 8082
 ## Make sure that notebooks are in the current WORKDIR
 WORKDIR  $AQUABIOTA_GIT_DIR#  $HOME
@@ -206,6 +193,7 @@ WORKDIR  $AQUABIOTA_GIT_DIR#  $HOME
 RUN mkdir -p $HOME/.local
 RUN chown -R $NB_USER:users $HOME/.local
 RUN chown -R $NB_USER:users $AQUABIOTA_GIT_DIR
+RUN chown -R $NB_USER:users $HOME/R-site-library
 
 # # Clean up APT when done.
 #RUN apt-get clean && rm -rf /var/lib/apt/lists/* /var/tmp/*
