@@ -155,6 +155,7 @@ RUN ipython profile create && echo $(ipython locate)
 COPY ipython_config.py $JUPYTER_CONFIG_DIR
 #COPY ipython_config.py $(ipython locate)/profile_default
 
+RUN conda install -y -c conda-forge ipyvolume pythreejs cookiecutter beakerx
 USER root
 
 EXPOSE 8889
